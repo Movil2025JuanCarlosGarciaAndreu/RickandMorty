@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class RickAndMortyResponse(
     @SerialName(value="info") val pageInfo: PageInfo,
-    @SerialName(value="results") val results: List<RickAndMortyCharacter>
+    @SerialName(value="results") val results: List<RickAndMortyCharacterDto>
 )
 
 @Serializable
@@ -19,7 +19,7 @@ data class PageInfo(
 
 
 @Serializable
-data class RickAndMortyCharacter(
+data class RickAndMortyCharacterDto(
     @SerialName(value="id") val id: Int,
     @SerialName(value="name") val name: String,
     @SerialName(value="status") val status: String,
