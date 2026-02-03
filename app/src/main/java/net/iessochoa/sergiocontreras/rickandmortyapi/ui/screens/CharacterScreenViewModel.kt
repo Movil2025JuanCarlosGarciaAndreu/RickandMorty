@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.iessochoa.sergiocontreras.rickandmortyapi.data.RickAndMortyRepository
 
@@ -17,6 +18,12 @@ class CharacterScreenViewModel: ViewModel() {
         viewModelScope.launch {
             val response = RickAndMortyRepository.getCharacters()
             val characters = response.results
+
+            _uiState.update { currenState ->
+                currenState.copy(
+                    characters = characters
+                )
+            }
 
         }
 
