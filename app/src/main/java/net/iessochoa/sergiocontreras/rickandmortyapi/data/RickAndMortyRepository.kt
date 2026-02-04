@@ -26,6 +26,7 @@ object RickAndMortyRepository {
     }
 
     suspend fun getCharacters() = retrofitService.getCharacters()
-
+    // En RickAndMortyRepository.kt
+    suspend fun getCharactersByPage(page: Int) = retrofitService.getCharactersByPage(page)
 
 }

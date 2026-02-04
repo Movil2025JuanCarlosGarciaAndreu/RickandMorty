@@ -26,12 +26,23 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import net.iessochoa.sergiocontreras.rickandmortyapi.network.RickAndMortyCharacterDto
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import net.iessochoa.sergiocontreras.rickandmortyapi.network.PageInfo
+
 @Composable
 fun CharactersScreen(modifier: Modifier = Modifier) {
     // Obtenemos el ViewModel y el estado
     val viewModel: CharacterScreenViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+    val totalPages = uiState.pageUI.pages // El número que viene de la API
+    var paginaActual by remember { mutableStateOf("") }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -45,6 +56,16 @@ fun CharactersScreen(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
+
+        DynamicSelectTextField(
+            selectedValue = paginaActual.toString(),
+            options = (1..totalPages).map { it.toString() }, // Crea lista del 1 al 42
+            label = "Selecciona Página",
+            onValueChangedEvent = { nuevaPagina ->
+                viewModel.fetchCharacters(nuevaPagina.toInt())
+            }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
         // Manejo de estados para mostrar la lista o el indicador de carga
         when (val status = uiState.currentState) {
             is RequestStatus.Loading -> {
@@ -66,7 +87,10 @@ fun CharactersScreen(modifier: Modifier = Modifier) {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(status.characters) { character ->
-                        CharacterItem(character)
+                        CharacterItem(
+                            character = character,
+                            page = uiState.pageUI // <-- Así se añade el segundo parámetro
+                        )
                     }
                 }
             }
@@ -76,7 +100,7 @@ fun CharactersScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun CharacterItem(character: RickAndMortyCharacterDto) {
+fun CharacterItem(character: RickAndMortyCharacterDto, page : PageInfo) {
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))
@@ -109,6 +133,11 @@ fun CharacterItem(character: RickAndMortyCharacterDto) {
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray
             )
+            Text(
+                text = page.pages.toString(),
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
 
             // Estado (Alive/Dead) con color condicional
             val statusColor = when(character.status.lowercase()) {
@@ -125,5 +154,46 @@ fun CharacterItem(character: RickAndMortyCharacterDto) {
         }
     }
 }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DynamicSelectTextField(
+    selectedValue: String,
+    options: List<String>,
+    label: String,
+    onValueChangedEvent: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
 
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded },
+        modifier = modifier.fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            readOnly = true,
+            value = selectedValue,
+            onValueChange = {},
+            label = { Text(label) },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+            modifier = Modifier.menuAnchor().fillMaxWidth()
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            options.forEach { selectionOption ->
+                DropdownMenuItem(
+                    text = { Text(selectionOption) },
+                    onClick = {
+                        onValueChangedEvent(selectionOption)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
 

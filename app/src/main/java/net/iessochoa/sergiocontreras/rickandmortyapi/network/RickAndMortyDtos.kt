@@ -9,6 +9,7 @@ data class RickAndMortyResponse(
     @SerialName(value="results") val results: List<RickAndMortyCharacterDto>
 )
 
+
 @Serializable
 data class PageInfo(
     @SerialName(value="count") val count: Int,

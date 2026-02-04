@@ -14,11 +14,12 @@ class CharacterScreenViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(CharacterScreenUiState())
     val uiState: StateFlow<CharacterScreenUiState> = _uiState.asStateFlow()
 
-    init {
+    init {fetchCharacters(0)}
+        fun fetchCharacters(page: Int) {
         viewModelScope.launch {
 
             try {
-                _uiState.update { it ->
+                /*_uiState.update { it ->
                     it.copy(
                         currentState = RequestStatus.Loading
                     )
@@ -26,10 +27,20 @@ class CharacterScreenViewModel: ViewModel() {
 
                 val response = RickAndMortyRepository.getCharacters()
 
-
                 _uiState.update { it ->
                     it.copy(
                         currentState = RequestStatus.Success(response.results)
+                    )
+                }*/
+                _uiState.update { it.copy(currentState = RequestStatus.Loading) }
+
+                // Llamamos a la nueva función de la API
+                val response = RickAndMortyRepository.getCharactersByPage(page)
+
+                _uiState.update {
+                    it.copy(
+                        currentState = RequestStatus.Success(response.results),
+                        pageUI = response.pageInfo // Actualizamos info global (total de páginas)
                     )
                 }
 
@@ -44,8 +55,8 @@ class CharacterScreenViewModel: ViewModel() {
             }
         }
     }
-
-
-
 }
+
+
+
 
