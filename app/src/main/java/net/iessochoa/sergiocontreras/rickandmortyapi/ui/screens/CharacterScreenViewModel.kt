@@ -16,18 +16,33 @@ class CharacterScreenViewModel: ViewModel() {
 
     init {
         viewModelScope.launch {
-            val response = RickAndMortyRepository.getCharacters()
-            val characters = response.results
 
-            _uiState.update { currenState ->
-                currenState.copy(
-                    characters = characters
-                )
+            try {
+                _uiState.update { it ->
+                    it.copy(
+                        currentState = RequestStatus.Loading
+                    )
+                }
+
+                val response = RickAndMortyRepository.getCharacters()
+
+
+                _uiState.update { it ->
+                    it.copy(
+                        currentState = RequestStatus.Success(response.results)
+                    )
+                }
+
+            } catch (e: Exception) {
+
+                e.printStackTrace() // Esto te dirá la línea exacta del fallo
+                _uiState.update { it ->
+                    it.copy(
+                        currentState = RequestStatus.ErrorState
+                    )
+                }
             }
-
         }
-
-
     }
 
 
