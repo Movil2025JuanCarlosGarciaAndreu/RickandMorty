@@ -113,6 +113,7 @@ fun CharacterItem(character: RickAndMortyCharacterDto, page : PageInfo) {
         ) {
             // Imagen del personaje usando su ID
             AsyncImage(
+
                 model = "https://rickandmortyapi.com/api/character/avatar/${character.id}.jpeg",
                 contentDescription = character.name,
                 modifier = Modifier.size(120.dp)
