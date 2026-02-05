@@ -6,7 +6,8 @@ import net.iessochoa.sergiocontreras.rickandmortyapi.network.RickAndMortyCharact
 data class CharacterScreenUiState (
     val characters: List<RickAndMortyCharacterDto> = emptyList(),
     val pageUI : PageInfo= PageInfo(0, 0, null, null),
-    val currentState: RequestStatus = RequestStatus.Idle
+    val currentState: RequestStatus = RequestStatus.Idle,
+    val currentPage: Int = 1,
 )
 
 sealed interface RequestStatus{

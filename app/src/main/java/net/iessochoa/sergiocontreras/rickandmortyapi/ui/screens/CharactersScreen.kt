@@ -42,7 +42,7 @@ fun CharactersScreen(modifier: Modifier = Modifier) {
     val viewModel: CharacterScreenViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val totalPages = uiState.pageUI.pages // El número que viene de la API
-    var paginaActual by remember { mutableStateOf("") }
+    //var paginaActual by remember { mutableStateOf("") }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -58,7 +58,7 @@ fun CharactersScreen(modifier: Modifier = Modifier) {
 
 
         DynamicSelectTextField(
-            selectedValue = paginaActual.toString(),
+            selectedValue = uiState.currentPage.toString(),
             options = (1..totalPages).map { it.toString() }, // Crea lista del 1 al 42
             label = "Selecciona Página",
             onValueChangedEvent = { nuevaPagina ->
@@ -89,7 +89,7 @@ fun CharactersScreen(modifier: Modifier = Modifier) {
                     items(status.characters) { character ->
                         CharacterItem(
                             character = character,
-                            page = uiState.pageUI // <-- Así se añade el segundo parámetro
+                            page = uiState.currentPage // <-- Así se añade el segundo parámetro
                         )
                     }
                 }
@@ -100,7 +100,7 @@ fun CharactersScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun CharacterItem(character: RickAndMortyCharacterDto, page : PageInfo) {
+fun CharacterItem(character: RickAndMortyCharacterDto, page : Int) {
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))
@@ -135,7 +135,7 @@ fun CharacterItem(character: RickAndMortyCharacterDto, page : PageInfo) {
                 color = Color.Gray
             )
             Text(
-                text = page.pages.toString(),
+                text = page.toString(),
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray
             )
